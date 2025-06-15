@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Módulo 7 – Renda Fixa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-correct {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-wrong {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-default {
+      background-color: #007BFF;
+      color: white;
+    }
+    #tempo {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    #resultado {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz Módulo 7</h1>
+
+    <div id="quiz">
+      <h2 id="pergunta"></h2>
+      <div id="alternativas"></div>
+      <p id="tempo">Tempo restante: <span id="segundos">15</span>s</p>
+    </div>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    const perguntas = [
+      {
+        pergunta: "Qual é o papel da renda fixa no seu portfólio?",
+        alternativas: [
+          "Apenas para perfis conservadores",
+          "O esqueleto financeiro que sustenta crescimento saudável",
+          "Para gastar rapidamente",
+          "Ignorar e focar apenas em ações"
+        ],
+        respostaCorreta: 1,
+      },
+      {
+        pergunta: "Qual desses NÃO é um instrumento de renda fixa mencionado no livro?",
+        alternativas: [
+          "Tesouro Direto",
+          "LCI",
+          "Ações Blue Chips",
+          "CDB"
+        ],
+        respostaCorreta: 2,
+      },
+      {
+        pergunta: "Por que a renda fixa é essencial mesmo para investidores agressivos?",
+        alternativas: [
+          "Para evitar risco",
+          "Para diversificar riscos e oferecer liquidez estratégica",
+          "Para substituir a renda variável",
+          "Não é essencial"
+        ],
+        respostaCorreta: 1,
+      },
+      {
+        pergunta: "Qual é a principal vantagem dos Tesouro Selic?",
+        alternativas: [
+          "Rentabilidade acima do CDI",
+          "Proteção contra inflação",
+          "Retorno garantido pelo governo + vinculação à Selic",
+          "Alta volatilidade"
+        ],
+        respostaCorreta: 2,
+      },
+      {
+        publica: "O que significa 'reinvestir juros' na renda fixa?",
+        alternativas: [
+          "Sacar os ganhos periodicamente",
+          "Usar os rendimentos para aumentar capital aplicado",
+          "Parar de investir após receber lucros",
+          "Reinvestir apenas em renda variável"
+        ],
+        respostaCorreta: 1,
+      },
+      {
+        pergunta: "Qual é a principal função da renda fixa no longo prazo?",
+        alternativas: [
+          "Substituir completamente a renda variável",
+          "Oferecer liquidez e estabilidade estratégica",
+          "Ser usada apenas por iniciantes",
+          "Ter maior retorno absoluto que ações"
+        ],
+        respostaCorreta: 1,
+      },
+      {
+        pergunta: "O que representa uma LCI?",
+        alternativas: [
+          "Título público federal",
+          "Investimento imobiliário",
+          "Letra de Crédito Imobiliário – isenta de IR",
+          "Fundo de índice"
+        ],
+        respostaCorreta: 2,
+      },
+      {
+        pergunta: "Como devemos ver a renda fixa em relação ao tempo?",
+        alternativas: [
+          "Como algo temporário",
+          "Como investimento definitivo",
+          "Como componente dinâmico do portfólio",
+          "Como forma de especulação"
+        ],
+        respostaCorreta: 2,
+      },
+      {
+        pergunta: "Qual é a vantagem de automatizar reinvestimentos em renda fixa?",
+        alternativas: [
+          "Evitar decisões emocionais e garantir consistência",
+          "Ganhar mais dinheiro rápido",
+          "Ignorar o mercado",
+          "Deixar tudo aleatório"
+        ],
+        respostaCorreta: 0,
+      },
+      {
+        pergunta: "Por que não devemos ignorar a renda fixa mesmo em tempos de baixa taxa de juros?",
+        alternativas: [
+          "Porque sempre paga bem",
+          "Porque oferece segurança e serve como reserva estratégica",
+          "Porque é obrigatório",
+          "É opcional"
+        ],
+        respostaCorreta: 1,
+      }
+    ];
+
+    let indiceAtual = 0;
+    let pontuacao = 0;
+    let tempoRestante = 15;
+    let temporizador;
+
+    const perguntaEl = document.getElementById("pergunta");
+    const alternativasEl = document.getElementById("alternativas");
+    const segundosEl = document.getElementById("segundos");
+    const resultadoEl = document.getElementById("resultado");
+
+    function mostrarPergunta() {
+      clearInterval(temporizador);
+      tempoRestante = 15;
+      segundosEl.textContent = tempoRestante;
+
+      if (indiceAtual >= perguntas.length) {
+        finalizarQuiz();
+        return;
+      }
+
+      const q = perguntas[indiceAtual];
+      perguntaEl.textContent = q.pergunta;
+      alternativasEl.innerHTML = "";
+
+      q.alternativas.forEach((alt, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = alt;
+        btn.className = "btn-default";
+        btn.onclick = () => responder(index);
+        alternativasEl.appendChild(btn);
+      });
+
+      iniciarTemporizador();
+    }
+
+    function iniciarTemporizador() {
+      temporizador = setInterval(() => {
+        tempoRestante--;
+        segundosEl.textContent = tempoRestante;
+        if (tempoRestante <= 0) {
+          clearInterval(temporizador);
+          alert("Tempo esgotado!");
+          desabilitarBotoes();
+          setTimeout(() => {
+            indiceAtual++;
+            mostrarPergunta();
+          }, 1000);
+        }
+      }, 1000);
+    }
+
+    function responder(indice) {
+      clearInterval(temporizador);
+      desabilitarBotoes();
+
+      const q = perguntas[indiceAtual];
+      const botoes = alternativasEl.querySelectorAll("button");
+
+      if (indice === q.respostaCorreta) {
+        botoes[indice].classList.remove("btn-default");
+        botoes[indice].classList.add("btn-correct");
+        pontuacao++;
+      } else {
+        botoes[indice].classList.remove("btn-default");
+        botoes[indice].classList.add("btn-wrong");
+        botoes[q.respostaCorreta].classList.add("btn-correct");
+      }
+
+      setTimeout(() => {
+        indiceAtual++;
+        mostrarPergunta();
+      }, 1500);
+    }
+
+    function desabilitarBotoes() {
+      const botoes = alternativasEl.querySelectorAll("button");
+      botoes.forEach(btn => btn.disabled = true);
+    }
+
+    function finalizarQuiz() {
+      const percentual = Math.round((pontuacao / perguntas.length) * 100);
+      document.getElementById("quiz").style.display = "none";
+      resultadoEl.innerHTML = `
+        <h2>Fim do Quiz!</h2>
+        <p>Você acertou <strong>${pontuacao}</strong> de ${perguntas.length} perguntas.</p>
+        <p><strong>Percentual:</strong> ${percentual}%</p>
+        <button onclick="location.reload()" style="margin-top: 20px;">Refazer</button>
+      `;
+    }
+
+    function init() {
+      mostrarPergunta();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
